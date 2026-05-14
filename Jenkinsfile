@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "bhushan432/devops-website"
+        CONTAINER_NAME = "devops-container"
     }
 
     stages {
@@ -35,6 +36,24 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 bat 'docker push %IMAGE_NAME%'
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                bat 'docker stop %CONTAINER_NAME% || exit 0'
+            }
+        }
+
+        stage('Remove Old Container') {
+            steps {
+                bat 'docker rm %CONTAINER_NAME% || exit 0'
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                bat 'docker run -d -p 8080:80 --name %CONTAINER_NAME% %IMAGE_NAME%'
             }
         }
 
